@@ -87,6 +87,8 @@ const (
 	DefaultViewsInStakingAuction uint64 = 5
 	DefaultViewsInDKGPhase       uint64 = 50
 	DefaultViewsInEpoch          uint64 = 180
+
+	integrationBootstrap = "flow-integration-bootstrap"
 )
 
 func init() {
@@ -106,7 +108,7 @@ type FlowNetwork struct {
 	root               *flow.Block
 	result             *flow.ExecutionResult
 	seal               *flow.Seal
-	bootstrapDir       string
+	BootstrapDir       string
 }
 
 // Identities returns a list of identities, one for each node in the network.
@@ -441,6 +443,10 @@ func WithAdditionalFlag(flag string) func(config *NodeConfig) {
 	}
 }
 
+func integrationBootstrapDir() (string, error) {
+	return ioutil.TempDir(TmpRoot, integrationBootstrap)
+}
+
 func PrepareFlowNetwork(t *testing.T, networkConf NetworkConfig) *FlowNetwork {
 
 	// number of nodes
@@ -466,10 +472,10 @@ func PrepareFlowNetwork(t *testing.T, networkConf NetworkConfig) *FlowNetwork {
 
 	// create a temporary directory to store all bootstrapping files, these
 	// will be shared between all nodes
-	bootstrapDir, err := ioutil.TempDir(TmpRoot, "flow-integration-bootstrap")
+	bootstrapDir, err := integrationBootstrapDir()
 	require.Nil(t, err)
 
-	fmt.Printf("bootstrapDir: %s \n", bootstrapDir)
+	fmt.Printf("BootstrapDir: %s \n", bootstrapDir)
 
 	root, result, seal, confs, err := BootstrapNetwork(networkConf, bootstrapDir)
 	require.Nil(t, err)
@@ -486,7 +492,7 @@ func PrepareFlowNetwork(t *testing.T, networkConf NetworkConfig) *FlowNetwork {
 		root:               root,
 		seal:               seal,
 		result:             result,
-		bootstrapDir:       bootstrapDir,
+		BootstrapDir:       bootstrapDir,
 	}
 
 	// check that at-least 2 full access nodes must be configure in your test suite
@@ -501,7 +507,7 @@ func PrepareFlowNetwork(t *testing.T, networkConf NetworkConfig) *FlowNetwork {
 
 	// add each node to the network
 	for _, nodeConf := range confs {
-		err = flowNetwork.AddNode(t, bootstrapDir, nodeConf)
+		_, err = flowNetwork.AddNode(t, bootstrapDir, nodeConf)
 		require.NoError(t, err)
 
 		// if node is of LN/SN role type add additional flags to node container for secure GRPC connection
@@ -587,7 +593,7 @@ func (net *FlowNetwork) addConsensusFollower(t *testing.T, rootProtocolSnapshotP
 
 // AddNode creates a node container with the given config and adds it to the
 // network.
-func (net *FlowNetwork) AddNode(t *testing.T, bootstrapDir string, nodeConf ContainerConfig) error {
+func (net *FlowNetwork) AddNode(t *testing.T, bootstrapDir string, nodeConf ContainerConfig) (*testingdock.Container, error) {
 
 	opts := &testingdock.ContainerOpts{
 		ForcePull: false,
@@ -611,7 +617,7 @@ func (net *FlowNetwork) AddNode(t *testing.T, bootstrapDir string, nodeConf Cont
 	// instead.
 	tmpdir, err := ioutil.TempDir(TmpRoot, "flow-integration-node")
 	if err != nil {
-		return fmt.Errorf("could not get tmp dir: %w", err)
+		return nil, fmt.Errorf("could not get tmp dir: %w", err)
 	}
 
 	nodeContainer := &Container{
@@ -753,7 +759,7 @@ func (net *FlowNetwork) AddNode(t *testing.T, bootstrapDir string, nodeConf Cont
 			// therefore the ghost node will deny incoming connections from all consensus
 			// followers. A flag for the ghost node will need to be created to enable
 			// overriding the default behavior (see: https://github.com/dapperlabs/flow-go/issues/5696).
-			return fmt.Errorf("currently ghost node for an access node which supports unstaked node is not implemented")
+			return nil, fmt.Errorf("currently ghost node for an access node which supports unstaked node is not implemented")
 		}
 	}
 
@@ -772,11 +778,11 @@ func (net *FlowNetwork) AddNode(t *testing.T, bootstrapDir string, nodeConf Cont
 	} else {
 		net.network.After(suiteContainer)
 	}
-	return nil
+	return suiteContainer, nil
 }
 
 func (net *FlowNetwork) WriteRootSnapshot(snapshot *inmem.Snapshot) {
-	err := WriteJSON(filepath.Join(net.bootstrapDir, bootstrap.PathRootProtocolStateSnapshot), snapshot.Encodable())
+	err := WriteJSON(filepath.Join(net.BootstrapDir, bootstrap.PathRootProtocolStateSnapshot), snapshot.Encodable())
 	require.NoError(net.t, err)
 }
 

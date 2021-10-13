@@ -4,7 +4,9 @@ import (
 	"context"
 	"github.com/onflow/cadence"
 	"github.com/onflow/flow-go/integration/utils"
+	"github.com/onflow/flow-go/model/encodable"
 	"github.com/stretchr/testify/suite"
+	"log"
 	"testing"
 
 	"github.com/onflow/flow-go/integration/testnet"
@@ -134,8 +136,9 @@ func (s *Suite) TestEpochJoin() {
 
 	env := utils.LocalnetEnv()
 
+	role := flow.RoleConsensus
 	// stake a new node
-	info := s.StakeNode(ctx, env, flow.RoleConsensus)
+	info := s.StakeNode(ctx, env, role)
 
 	// get node info from staking table
 	nodeInfoCDC := s.ExecuteGetNodeInfoScript(ctx, env, info.NodeID)
@@ -145,6 +148,14 @@ func (s *Suite) TestEpochJoin() {
 	// make sure node info we generated matches what we get from the flow staking table
 	nodeID := string(nodeInfo.Fields[0].(cadence.String))
 	require.Equal(s.T(), info.NodeID.String(), nodeID, "expected generated in test to equal node ID node ID from staking table ")
+
+	nodeConfig := testnet.NewNodeConfig(role)
+	testContainerConfig := testnet.NewContainerConfig("epochs-test-container", nodeConfig, info.NetworkingKey, info.StakingAccountKey)
+	err := testContainerConfig.WriteKeyFiles(s.net.BootstrapDir, flow.Localnet, info.MachineAccountAddress, encodable.MachineAccountPrivKey{PrivateKey: info.MachineAccountKey})
+	testContainer, err := s.net.AddNode(s.T(), s.net.BootstrapDir, testContainerConfig)
+	require.NoError(s.T(), err, "failed to add container to network")
+	log.Println("THIS IS A IMAGE MAN", testContainer.Image)
+	require.NoError(s.T(), err)
 
 	s.net.StopContainers()
 }
