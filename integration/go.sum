@@ -247,8 +247,8 @@ github.com/cpuguy83/go-md2man/v2 v2.0.0/go.mod h1:maD7wRr/U5Z6m/iR4s+kqSMx2CaBsr
 github.com/creack/pty v1.1.7/go.mod h1:lj5s0c3V2DBrqTV7llrYr5NG6My20zk30Fl46Y7DoTY=
 github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ33E=
 github.com/dapperlabs/testingdock v0.4.2/go.mod h1:S45YfB1J1mbOeLHhJROx3dFZfMCVSxTgSU9vZ15Oq18=
-github.com/dapperlabs/testingdock v0.4.3-0.20200626075145-ea23fc16bb90 h1:RYSKhK13V8pZq+AqjWnH1vrENL/ZMyWqj2W2rGPDmYo=
-github.com/dapperlabs/testingdock v0.4.3-0.20200626075145-ea23fc16bb90/go.mod h1:HeTbuHG1J4yt4n7NlZSyuk5c5fmyz6hECbyV+36Ku7Q=
+github.com/dapperlabs/testingdock v0.4.3 h1:rlMghXa94vV7/uQCtxeiAbAOgK5fd83S1LeXcXMqql8=
+github.com/dapperlabs/testingdock v0.4.3/go.mod h1:HeTbuHG1J4yt4n7NlZSyuk5c5fmyz6hECbyV+36Ku7Q=
 github.com/dave/jennifer v1.2.0/go.mod h1:fIb+770HOpJ2fmN9EPPKOqm1vMGhB+TwXKMZhrIygKg=
 github.com/davecgh/go-spew v0.0.0-20171005155431-ecdeabc65495/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
@@ -1333,9 +1333,9 @@ github.com/prometheus/tsdb v0.6.2-0.20190402121629-4f204dcbc150/go.mod h1:qhTCs0
 github.com/prometheus/tsdb v0.7.1/go.mod h1:qhTCs0VvXwvX/y3TZrWD7rabWM+ijKTux40TwIPHuXU=
 github.com/psiemens/graceland v1.0.0/go.mod h1:1Tof+vt1LbmcZFE0lzgdwMN0QBymAChG3FRgDx8XisU=
 github.com/psiemens/sconfig v0.0.0-20190623041652-6e01eb1354fc/go.mod h1:+MLKqdledP/8G3rOBpknbLh0IclCf4WneJUtS26JB2U=
-github.com/raviqqe/hamt v0.0.0-20190615202029-864fb7caef85/go.mod h1:I9elsTaXMhu41qARmzefHy7v2KmAV2TB1yH4E+nBSf0=
 github.com/psiemens/sconfig v0.1.0 h1:xfWqW+TRpih7mXZIqKYTmpRhlZLQ1kbxV8EjllPv76s=
 github.com/psiemens/sconfig v0.1.0/go.mod h1:+MLKqdledP/8G3rOBpknbLh0IclCf4WneJUtS26JB2U=
+github.com/raviqqe/hamt v0.0.0-20190615202029-864fb7caef85/go.mod h1:I9elsTaXMhu41qARmzefHy7v2KmAV2TB1yH4E+nBSf0=
 github.com/rcrowley/go-metrics v0.0.0-20181016184325-3113b8401b8a/go.mod h1:bCqnVzQkZxMG4s8nGwiZ5l3QUCyqpo9Y+/ZMZ9VjZe4=
 github.com/retailnext/hllpp v1.0.1-0.20180308014038-101a6d2f8b52/go.mod h1:RDpi1RftBQPUCDRw6SmxeaREsAaRKnOclghuzp/WRzc=
 github.com/rivo/uniseg v0.1.0/go.mod h1:J6wj4VEh+S6ZtnVlnTBMWIodfgj8LQOQFoIToxlJtxc=
