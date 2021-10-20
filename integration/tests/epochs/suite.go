@@ -10,9 +10,9 @@ import (
 	"github.com/onflow/flow-go/crypto"
 	"github.com/onflow/flow-go/integration/utils"
 	"github.com/onflow/flow-go/model/bootstrap"
+	"github.com/rs/zerolog"
 
 	sdkcrypto "github.com/onflow/flow-go-sdk/crypto"
-	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 
@@ -34,7 +34,6 @@ type Suite struct {
 }
 
 func (s *Suite) SetupTest() {
-
 	collectionConfigs := []func(*testnet.NodeConfig){
 		testnet.WithAdditionalFlag("--hotstuff-timeout=12s"),
 		testnet.WithAdditionalFlag("--block-rate-delay=100ms"),
@@ -168,8 +167,11 @@ func (s *Suite) StakeNode(ctx context.Context, env templates.Environment, role f
 	tokenAmount, err := s.client.TokenAmountByRole(role)
 	require.NoError(s.T(), err)
 
-	encMachinePubKey, err := flow.EncodeRuntimeAccountPublicKey(machineAccountPubKey)
-	require.NoError(s.T(), err)
+	var encMachinePubKey []byte
+	if machineAccountKey != nil  {
+		encMachinePubKey, err = flow.EncodeRuntimeAccountPublicKey(machineAccountPubKey)
+		require.NoError(s.T(), err)
+	}
 
 	// register node using staking collection
 	result, err = s.registerNode(
@@ -226,12 +228,12 @@ func (s *Suite) fundAccount(ctx context.Context, receiver sdk.Address, tokenAmou
 	return result, nil
 }
 
-// generates inital keys needed to bootstrap account
+// generates initial keys needed to bootstrap account
 func (s *Suite) generateAccountKeys(role flow.Role) (
 	operatorAccountKey,
 	networkingKey,
 	stakingKey,
-	machineAccountKey sdkcrypto.PrivateKey,
+	machineAccountKey crypto.PrivateKey,
 	machineAccountPubKey flow.AccountPublicKey,
 ) {
 	operatorAccountKey = unittest.PrivateKeyFixture(crypto.ECDSAP256, crypto.KeyGenSeedMinLenECDSAP256)
