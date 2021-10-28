@@ -61,7 +61,7 @@ func (suite *UnstakedAccessSuite) TestReceiveBlocks() {
 	receivedBlocks := make(map[flow.Identifier]struct{}, blockCount)
 
 	suite.Run("consensus follower follows the chain", func() {
-		suite.T().Skip("flaky test")
+		// suite.T().Skip("flaky test")
 
 		// kick off the first follower
 		suite.followerMgr1.startFollower(ctx)
@@ -90,7 +90,7 @@ func (suite *UnstakedAccessSuite) TestReceiveBlocks() {
 	})
 
 	suite.Run("consensus follower sync up with the chain", func() {
-		suite.T().Skip("flaky test")
+		// suite.T().Skip("flaky test")
 		// kick off the second follower
 		suite.followerMgr2.startFollower(ctx)
 
@@ -169,7 +169,7 @@ func (suite *UnstakedAccessSuite) buildNetworkConfig() {
 	suite.followerMgr1, err = newFollowerManager(suite.T(), follower1)
 	require.NoError(suite.T(), err)
 
-	follower2 := suite.net.ConsensusFollowerByID(followerConfigs[0].NodeID)
+	follower2 := suite.net.ConsensusFollowerByID(followerConfigs[1].NodeID)
 	suite.followerMgr2, err = newFollowerManager(suite.T(), follower2)
 	require.NoError(suite.T(), err)
 }
@@ -209,10 +209,8 @@ func (fm *followerManager) startFollower(ctx context.Context) {
 	go func() {
 		fm.follower.Run(ctx)
 	}()
-	// get the underlying node builder
-	node := fm.follower.NodeBuilder
 	// wait for the follower to have completely started
-	unittest.RequireCloseBefore(fm.t, node.Ready(), 10*time.Second,
+	unittest.RequireCloseBefore(fm.t, fm.follower.Ready(), 10*time.Second,
 		"timed out while waiting for consensus follower to start")
 }
 
@@ -224,7 +222,7 @@ func (fm *followerManager) onBlockFinalizedConsumer(finalizedBlockID flow.Identi
 // getBlock checks if the underlying storage of the consensus follower has a block
 func (fm *followerManager) getBlock(blockID flow.Identifier) (*flow.Block, error) {
 	// get the underlying storage that the follower is using
-	store := fm.follower.NodeBuilder.Storage
+	store := fm.follower.Storage
 	require.NotNil(fm.t, store)
 	blocks := store.Blocks
 	require.NotNil(fm.t, blocks)
