@@ -3,6 +3,7 @@ package epochs
 import (
 	"context"
 	"fmt"
+
 	"github.com/onflow/flow-go/integration/utils"
 	"github.com/onflow/flow-go/model/encodable"
 	"github.com/onflow/flow-go/state/protocol/inmem"
@@ -140,7 +141,7 @@ func (s *Suite) TestEpochJoin() {
 	role := flow.RoleAccess
 	// stake a new node
 	info := s.StakeNode(ctx, env, role)
-	testContainerName := fmt.Sprintf("epochs-test-join-%s-%s",info.Role, info.NodeID)
+	testContainerName := fmt.Sprintf("epochs-test-join-%s-%s", info.Role, info.NodeID)
 
 	// check if node is in proposed table
 	proposedTable := s.ExecuteGetProposedTableScript(ctx, env, info.NodeID)
@@ -160,7 +161,7 @@ func (s *Suite) TestEpochJoin() {
 
 	// download root snapshot from access node, wait until we are in the epoch setup phase
 	var snapshot *inmem.Snapshot
-	for  {
+	for {
 		snapshot, err = s.client.GetLatestProtocolSnapshot(ctx)
 		require.NoError(s.T(), err)
 
@@ -170,20 +171,6 @@ func (s *Suite) TestEpochJoin() {
 			break
 		}
 	}
-
-	for counter := 0; counter < 2; counter++ {
-		// wait until the access node reaches the desired epoch
-		var epoch protocol.Epoch
-		var epochCounter uint64
-		for epoch == nil || epochCounter != uint64(counter) {
-			snapshot, err := s.client.GetLatestProtocolSnapshot(ctx)
-			require.NoError(s.T(), err)
-			epoch = snapshot.Epochs().Current()
-			epochCounter, err = epoch.Counter()
-			require.NoError(s.T(), err)
-		}
-	}
-
 
 	// write updated root snapshot
 	s.net.WriteRootSnapshot(snapshot)

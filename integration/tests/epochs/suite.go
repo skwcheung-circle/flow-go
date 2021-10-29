@@ -49,12 +49,12 @@ func (s *Suite) SetupTest() {
 	}
 
 	// a ghost node masquerading as a consensus node
-	s.ghostID = unittest.IdentifierFixture()
-	ghostConNode := testnet.NewNodeConfig(
-		flow.RoleAccess,
-		testnet.WithLogLevel(zerolog.DebugLevel),
-		testnet.WithID(s.ghostID),
-		testnet.AsGhost())
+	//s.ghostID = unittest.IdentifierFixture()
+	//ghostConNode := testnet.NewNodeConfig(
+	//	flow.RoleAccess,
+	//	testnet.WithLogLevel(zerolog.DebugLevel),
+	//	testnet.WithID(s.ghostID),
+	//	testnet.AsGhost())
 
 	confs := []testnet.NodeConfig{
 		testnet.NewNodeConfig(flow.RoleCollection, collectionConfigs...),
@@ -67,7 +67,7 @@ func (s *Suite) SetupTest() {
 		testnet.NewNodeConfig(flow.RoleVerification, testnet.WithDebugImage(false)),
 		testnet.NewNodeConfig(flow.RoleAccess),
 		testnet.NewNodeConfig(flow.RoleAccess),
-		ghostConNode,
+		//ghostConNode,
 	}
 
 	netConf := testnet.NewNetworkConfigWithEpochConfig("epochs tests", confs, 100, 50, 180)
@@ -98,10 +98,10 @@ func (s *Suite) Ghost() *client.GhostClient {
 }
 
 func (s *Suite) TearDownTest() {
-	//s.net.Remove()
-	//if s.cancel != nil {
-	//	s.cancel()
-	//}
+	s.net.Remove()
+	if s.cancel != nil {
+		s.cancel()
+	}
 }
 
 // StakedNodeOperationInfo struct contains all the node information needed to start a node after it is onboarded (staked and registered)
